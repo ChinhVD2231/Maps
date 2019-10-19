@@ -79,6 +79,7 @@ import java.util.Locale;
 import hvcnbcvt_uddd.googleapi.Control.AddMarker;
 import hvcnbcvt_uddd.googleapi.Model.DataSos;
 import hvcnbcvt_uddd.googleapi.Model.MarkerManage;
+import hvcnbcvt_uddd.googleapi.Model.datafreeresponse.DataFreeResponse;
 import hvcnbcvt_uddd.googleapi.Model.dataloginresponse.User;
 import hvcnbcvt_uddd.googleapi.Model.datasosresponse.SosResponse;
 import hvcnbcvt_uddd.googleapi.Model.datauserlistresponse.DataUsersSosResponse;
@@ -399,20 +400,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void sendSosCancel() {
-        String entityId = prefHelper.getString("AUTHORIZATION_KEY");
         HashMap<String, String> option = new HashMap<>();
         option.put("entityId", entityId);
         apiInterface.cancelSOS(option).enqueue(new Callback<DataSos>() {
             @Override
             public void onResponse(Call<DataSos> call, Response<DataSos> response) {
                 Log.d("MapsACtivityyy", "onResponse: ");
-                Toast.makeText(getApplicationContext(), "Canceled request!", Toast.LENGTH_LONG).show();
+                String msg = response.body().getMessage();
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             }
 
             @Override
 
             public void onFailure(Call<DataSos> call, Throwable t) {
-                Log.d("MapsACtivityyy", "onFailure: ");
+                Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -632,7 +633,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             myLocation = lm.getLastKnownLocation(provider);
         }
 
-
         Location newLocation = new Location("go");
         newLocation.setLatitude(lat);
         newLocation.setLongitude(log);
@@ -793,6 +793,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResponse(Call<SosResponse> call, Response<SosResponse> response) {
                 if (response.isSuccessful()) {
+                    handleConfirmResponse();
                     String responseMess = response.body().getMessage();
                     Toast.makeText(getApplicationContext(), responseMess, Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
@@ -805,6 +806,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 progressDialog.dismiss();
             }
         });
+    }
+
+    private void handleConfirmResponse() {
+        if (txt_sos.getText().equals("SOS")) {
+            txt_sos.setText("Hủy");
+        }
     }
 
     @Override

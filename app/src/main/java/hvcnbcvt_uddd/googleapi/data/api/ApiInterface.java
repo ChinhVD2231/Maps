@@ -39,4 +39,7 @@ public interface ApiInterface {
 
     @POST("free")
     Call<DataFreeResponse> sendDataFreeRequest(@Body HashMap<String, String> option);
+
+    @POST("reject")
+    Call<DataFreeResponse> sendRejectRequest(@Body HashMap<String, String> option);
 }
